@@ -1,5 +1,5 @@
 
-let BCClient = require("./bc-handler.ts");
+const BCClient = require("../src/bc-handler.ts");
 describe("test constructor", () => {
 	it("should work", () => {
 		let username = process.env.BC_USERNAME;
