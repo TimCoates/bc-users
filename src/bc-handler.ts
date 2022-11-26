@@ -3,6 +3,7 @@ import { structures } from "./structures";
 let jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 import { logThis, doCookie } from "./utils";
+
 export class BCClient {
 	readonly baseURL: string = "https://www.britishcycling.org.uk";
 	private cookie: string = "";
