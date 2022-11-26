@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: cd ..
       - run: npm run build
       - run: npm test
       - run: npm run version
