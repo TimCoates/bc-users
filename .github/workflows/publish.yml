@@ -1,4 +1,8 @@
 name: Node.js CI
+env:
+  BC_PASSWORD: ${{ secrets.BC_PASSWORD }}
+  BC_USERNAME: ${{ secrets.BC_USERNAME }}
+  BC_CLUBID: ${{ secrets.BC_CLUBID }}
 
 on:
   push:
@@ -14,6 +18,7 @@ jobs:
       - uses: actions/checkout@v3
       - run: npm install
       - run: npm run build
+      - run: export =${{ secrets.MY_SECRET }}
       - run: npm test
       - run: npm run version
       - run: npm run pub
