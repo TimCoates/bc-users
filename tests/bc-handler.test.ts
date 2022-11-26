@@ -45,7 +45,6 @@ describe("test getMembers", () => {
 		let username = process.env.BC_USERNAME;
 		let password = process.env.BC_PASSWORD;
 		let client = new BCClient.BCClient(username, password);
-		let result = await client.authenticate();
 		people = await client.getMembers(process.env.BC_CLUBID);
 		expect(people.length).toBe(0);
 	});

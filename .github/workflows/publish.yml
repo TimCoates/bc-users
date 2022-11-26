@@ -13,4 +13,5 @@ jobs:
     steps:
       - run: npm run build
       - run: npm test
+      - run: npm run version
       - run: npm run pub

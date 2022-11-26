@@ -8,7 +8,8 @@
 		"lint": "tslint -p tsconfig.json",
 		"build": "tsc",
 		"test": "jest",
-		"pub": "npm version patch --force && npm publish"
+		"version": "npm version patch --force",
+		"pub": "npm publish"
 	},
 	"repository": {
 		"type": "git",
