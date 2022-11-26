@@ -1,4 +1,5 @@
 import axios from "axios";
+var zlib = require("zlib");
 import { structures } from "./structures";
 let jsdom = require("jsdom");
 const { JSDOM } = jsdom;
@@ -67,12 +68,14 @@ export class BCClient {
 						"referer": "https://www.britishcycling.org.uk/dashboard/club/membership?club_id=" + clubID,
 						"x-requested-with": "XMLHttpRequest",
 						"Content-Type": "application/x-www-form-urlencoded",
-						"cookie": this.cookie
+						"cookie": this.cookie,
+						"accept-encoding": "gzip;q=0"
 					}
 				};
 				logThis("BC-23", "getMembers", "config", config);
 
 				let response = await axios.get(url, config);
+				let headers = response.headers;
 				logThis("BC-24", "getMembers", "Response back, member count is", response.data.aaData.length);
 				members = response.data.aaData;
 			} else {
