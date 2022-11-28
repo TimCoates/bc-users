@@ -2,7 +2,6 @@ import axios from "axios";
 import { structures } from "./structures";
 let jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-import { logThis } from "./utils";
 
 export class BCClient {
 	readonly baseURL: string = "https://www.britishcycling.org.uk";
@@ -10,15 +9,31 @@ export class BCClient {
 	private readonly username: string;
 	private readonly password: string;
 	authenticated: boolean = false;
+	private logging: boolean = false;
 
-	constructor(username: string, password: string) {
-		logThis("BC-01", "constructor", "Called");
+	/** Constructor to create the British Cycling client
+	 * 
+	 * @param username A username from the BC website
+	 * @param password A password from the BC website
+	 * @param logging Boolean (optional) gives the ability to turn on logging (defaults to off)
+	 */
+	constructor(username: string, password: string, logging: boolean = false) {
+		if (typeof logging !== "undefined") {
+			this.logging = logging;
+		} else {
+			this.logging = false;
+		}
+		this.logThis("BC-01", "constructor", "Called");
 		this.username = username;
 		this.password = password;
 	}
 
+	/** Used toauthenticate the client using the credentials provided in the constructor.
+	 * 
+	 * @returns 
+	 */
 	async authenticate(): Promise<boolean> {
-		logThis("BC-10", "authenticate", "called");
+		this.logThis("BC-10", "authenticate", "called");
 		try {
 			const url = this.baseURL + "/ajax/ajax_sign_in";
 			const params = new URLSearchParams()
@@ -35,33 +50,33 @@ export class BCClient {
 			};
 
 			let response = await axios.post(url, params, config);
-			logThis("BC-15", "authenticate", "Got a response");
+			this.logThis("BC-15", "authenticate", "Got a response");
 
 			if (response.data == true) {
 				this.authenticated = true;
-				logThis("BC-16", "authenticate", "Authenticated");
+				this.logThis("BC-16", "authenticate", "Authenticated");
 				let cookies: string[] = response.headers["set-cookie"];
 				this.cookie = await this.doCookie(cookies);
-				logThis("BC-17", "authenticate", "got cookie", this.cookie);
+				this.logThis("BC-17", "authenticate", "got cookie", this.cookie);
 				return true;
 			} else {
-				logThis("BC-18", "authenticate", "Authenticate failed");
+				this.logThis("BC-18", "authenticate", "Authenticate failed");
 				return false;
 			}
 		} catch (Except) {
-			logThis("BC-19", "authenticate", "Exception caught", (Except as Error).stack);
+			this.logThis("BC-19", "authenticate", "Exception caught", (Except as Error).stack);
 			return false;
 		}
 	}
 
 	async getMembers(clubID: string): Promise<structures.bcPerson[]> {
-		logThis("BC-20", "getMembers", "Called", clubID);
+		this.logThis("BC-20", "getMembers", "Called", clubID);
 		let members: structures.bcPerson[] = [];
 		try {
 			if (this.authenticated) {
-				logThis("BC-21", "getMembers", "Authenticated so proceeding");
+				this.logThis("BC-21", "getMembers", "Authenticated so proceeding");
 				const url = this.baseURL + "/dashboard/club/membership/ajax_club_members?status=active&club_id=" + clubID;
-				logThis("BC-22", "getMembers", "URL", url);
+				this.logThis("BC-22", "getMembers", "URL", url);
 				let config: any = {
 					headers: {
 						"referer": "https://www.britishcycling.org.uk/dashboard/club/membership?club_id=" + clubID,
@@ -71,28 +86,28 @@ export class BCClient {
 						"accept-encoding": "gzip;q=0"
 					}
 				};
-				logThis("BC-23", "getMembers", "config", config);
+				this.logThis("BC-23", "getMembers", "config", config);
 
 				let response = await axios.get(url, config);
 				let headers = response.headers;
-				logThis("BC-24", "getMembers", "Response back, member count is", response.data.aaData.length);
+				this.logThis("BC-24", "getMembers", "Response back, member count is", response.data.aaData.length);
 				members = response.data.aaData;
 			} else {
-				logThis("BC-25", "getMembers", "Not authenticated returning empty array");
+				this.logThis("BC-25", "getMembers", "Not authenticated returning empty array");
 			}
 		} catch (Except) {
-			logThis("BC-26", "getMembers", "Exception caught", (Except as Error).stack);
+			this.logThis("BC-26", "getMembers", "Exception caught", (Except as Error).stack);
 		}
 		return members;
 	}
 
 	async getSingleMember(clubID: string, membership_number: string): Promise<structures.bcPerson> {
-		logThis("BC-30", "getSingleMember", "Called", membership_number);
+		this.logThis("BC-30", "getSingleMember", "Called", membership_number);
 		try {
 			if (this.authenticated) {
-				logThis("BC-31", "getSingleMember", "Authenticated so will proceed");
+				this.logThis("BC-31", "getSingleMember", "Authenticated so will proceed");
 				const url = this.baseURL + "/dashboard/club/membership/ajax_club_members?status=active&club_id=" + clubID;
-				logThis("BC-32", "getSingleMember", "url", url);
+				this.logThis("BC-32", "getSingleMember", "url", url);
 				let config: any = {
 					headers: {
 						"referer": "https://www.britishcycling.org.uk/dashboard/club/membership?club_id=" + clubID + "&sSearch=" + membership_number,
@@ -101,44 +116,44 @@ export class BCClient {
 						"cookie": this.cookie
 					}
 				};
-				logThis("BC-33", "getSingleMember", "config", config);
+				this.logThis("BC-33", "getSingleMember", "config", config);
 
 
 				let response = await axios.get(url, config);
-				logThis("BC-34", "getSingleMember", "Got response");
+				this.logThis("BC-34", "getSingleMember", "Got response");
 
 				if (response.data.iTotalDisplayRecords != "0") {
-					logThis("BC-35", "getSingleMember", "Got some records", response.data.iTotalDisplayRecords);
+					this.logThis("BC-35", "getSingleMember", "Got some records", response.data.iTotalDisplayRecords);
 					for (let index: number = 0; index < parseInt(response.data.iTotalDisplayRecords, 10); index++) {
 						if (response.data.aaData[index].membership_number == membership_number) {
-							logThis("BC-36", "getSingleMember", "Match found, returning it", response.data.aaData[index]);
+							this.logThis("BC-36", "getSingleMember", "Match found, returning it", response.data.aaData[index]);
 							return response.data.aaData[index];
 						}
 					}
-					logThis("BC-37", "getSingleMember", "None matched, will throw");
+					this.logThis("BC-37", "getSingleMember", "None matched, will throw");
 					throw new Error("None of the records from search match");
 				} else {
-					logThis("BC-38", "getSingleMember", "Got zero records back, will throw", response.data);
+					this.logThis("BC-38", "getSingleMember", "Got zero records back, will throw", response.data);
 					throw new Error("Got 0 records back from search");
 				}
 			} else {
-				logThis("BC-39", "getSingleMember", "Not authenticated, will throw");
+				this.logThis("BC-39", "getSingleMember", "Not authenticated, will throw");
 				throw new Error("Not authenticated");
 			}
 		} catch (Except: any) {
-			logThis("BC-40", "getSingleMember", "Exception caught, logging but will rethrow", (Except as Error).stack);
+			this.logThis("BC-40", "getSingleMember", "Exception caught, logging but will rethrow", (Except as Error).stack);
 			throw new Error(Except);
 		}
 	}
 
 	async getMember(clubID: string, personID: string): Promise<structures.bcDetailedPerson> {
-		logThis("BC-50", "getMember", "Called for person:", personID)
+		this.logThis("BC-50", "getMember", "Called for person:", personID)
 
 		try {
 			if (this.authenticated) {
-				logThis("BC-51", "getMember", "Authenticated so will proceed");
+				this.logThis("BC-51", "getMember", "Authenticated so will proceed");
 				const url = this.baseURL + "/dashboard/club/membership/ajax_add_member_form?club_id=" + clubID + "&person_id=" + personID;
-				logThis("BC-52", "getMember", "url", url);
+				this.logThis("BC-52", "getMember", "url", url);
 
 				let config: any = {
 					headers: {
@@ -148,12 +163,12 @@ export class BCClient {
 						"cookie": this.cookie
 					}
 				};
-				logThis("BC-53", "getMember", "config", config);
+				this.logThis("BC-53", "getMember", "config", config);
 
 				let response = await axios.get(url, config);
-				logThis("BC-54", "getMember", "Got response");
+				this.logThis("BC-54", "getMember", "Got response");
 				let personHTML: string = response.data;
-				logThis("BC-55", "getMember", "html", personHTML);
+				this.logThis("BC-55", "getMember", "html", personHTML);
 
 				//let dom = new JSDOM(personHTML);
 				let itemList = [
@@ -185,7 +200,7 @@ export class BCClient {
 				];
 
 				let obj: any = this.getItemsFromDOM(personHTML, itemList);
-				logThis("BC56", "getMember", "Got data from html", obj);
+				this.logThis("BC56", "getMember", "Got data from html", obj);
 
 				let person = new structures.bcDetailedPerson(
 					obj.person_id,
@@ -214,38 +229,38 @@ export class BCClient {
 					obj.membership_end_dt,
 					obj.cmcfd_club_no
 				);
-				logThis("BC-57", "getMember", "Created and returning person", person);
+				this.logThis("BC-57", "getMember", "Created and returning person", person);
 				return person;
 			} else {
-				logThis("BC-58", "getMember", "Not authenticated");
+				this.logThis("BC-58", "getMember", "Not authenticated");
 			}
 		} catch (Except) {
-			logThis("BC-59", "getMember", "Exception caught", (Except as Error).stack);
+			this.logThis("BC-59", "getMember", "Exception caught", (Except as Error).stack);
 		}
-		logThis("BC-60", "getMember", "Returning empty person");
+		this.logThis("BC-60", "getMember", "Returning empty person");
 		return new structures.bcDetailedPerson("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
 	}
 
 	getItemsFromDOM(html: string, itemlist: string[]): any {
 		//logThis("BC-80", "getItemsFromDOM", "Called", html);
-		logThis("BC-91", "getItemsFromDOM", "Called", itemlist);
+		this.logThis("BC-91", "getItemsFromDOM", "Called", itemlist);
 
 		let returnVal: any = {};
 		let dom = new JSDOM(html);
-		logThis("BC-92", "getItemsFromDOM", "got DOM");
+		this.logThis("BC-92", "getItemsFromDOM", "got DOM");
 
 
 		for (let item of itemlist) {
 			let itemName: string = (item as string);
 			if (dom.window.document.getElementById(itemName) != null) {
-				logThis("BC-93", "getMember", "Setting " + item + " to: " + dom.window.document.getElementById(itemName).value);
+				this.logThis("BC-93", "getMember", "Setting " + item + " to: " + dom.window.document.getElementById(itemName).value);
 				returnVal[(itemName as string)] = (dom.window.document.getElementById(itemName).value as string);
 			} else {
 				returnVal[(itemName as string)] = "";
-				logThis("BC-94", "getMember", "No " + itemName + " set");
+				this.logThis("BC-94", "getMember", "No " + itemName + " set");
 			}
 		}
-		logThis("BC-95", "getItemsFromDOM", "Returning this object", returnVal);
+		this.logThis("BC-95", "getItemsFromDOM", "Returning this object", returnVal);
 		return returnVal;
 	}
 
@@ -254,7 +269,7 @@ export class BCClient {
 	 * @param cookies 
 	 */
 	async doCookie(cookies: string[]): Promise<string> {
-		logThis("BC-90", "doCookie", "called", cookies);
+		this.logThis("BC-90", "doCookie", "called", cookies);
 		let cookie: string = "";
 		let cookieExpiry: string = "";
 		for (let item of cookies) {
@@ -271,9 +286,32 @@ export class BCClient {
 		if (cookie.length > 0) {
 			cookie = cookie.split(";")[0] + ";";
 		}
-		logThis("BC-91", "doCookie", "Got cookie", cookie);
-		logThis("BC-92", "doCookie", "Got cookie expiry", cookieExpiry);
-		logThis("BC-96", "doCookie", "Returning cookie", cookie);
+		this.logThis("BC-91", "doCookie", "Got cookie", cookie);
+		this.logThis("BC-92", "doCookie", "Got cookie expiry", cookieExpiry);
+		this.logThis("BC-96", "doCookie", "Returning cookie", cookie);
 		return cookie;
 	}
+
+
+	/**
+	 * Function to ensure consistent structured log entries.
+	 * 
+	 * @param code A unique log reference e.g. ABC-12
+	 * @param message The log message
+	 * @param payload An optional object or string
+	 * @returns void 
+	 */
+	logThis(code: string, fnName: string, message: string, payload?: any): void {
+		if (this.logging === true) {
+			let messageObject = {
+				code: code,
+				function: fnName,
+				message: message,
+				payload: payload,
+				when: new Date().toISOString().substring(0, 16)
+			};
+			console.log(JSON.stringify(messageObject));
+		}
+	}
+
 }

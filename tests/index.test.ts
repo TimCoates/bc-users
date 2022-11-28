@@ -9,6 +9,29 @@ describe("test constructor", () => {
 		expect(client).not.toBe(null);
 	});
 
+	it("Should construct with default logging", () => {
+		let username = process.env.BC_USERNAME;
+		let password = process.env.BC_PASSWORD;
+		let client = new BCClient.BCClient(username, password);
+		expect(client).not.toBe(null);
+	});
+
+
+	it("Should construct with explicit logging", () => {
+		let username = process.env.BC_USERNAME;
+		let password = process.env.BC_PASSWORD;
+		let client = new BCClient.BCClient(username, password, true);
+		expect(client).not.toBe(null);
+	});
+
+	it("Should construct without explicit logging", () => {
+		let username = process.env.BC_USERNAME;
+		let password = process.env.BC_PASSWORD;
+		let client = new BCClient.BCClient(username, password, false);
+		expect(client).not.toBe(null);
+	});
+
+
 });
 
 describe("test authenticate", () => {
