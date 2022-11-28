@@ -31,7 +31,7 @@
 	"bugs": {
 		"url": "https://github.com/TimCoates/bc-users/issues"
 	},
-	"homepage": "https://github.com/TimCoates/bc-users/blob/main/README.md",
+	"homepage": "https://timcoates.github.io/bc-users/",
 	"devDependencies": {
 		"@types/jest": "^29.2.3",
 		"@types/node": "^18.11.9",
