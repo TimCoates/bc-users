@@ -1,8 +1,11 @@
 {
 	"name": "@timcoates/bc-users",
+	"files": [
+		"lib/**/*"
+	],
 	"version": "1.0.16",
 	"description": "Repo for an npm package to retrieve users of a club where members are managed via British Cycling's Club Manager tool.",
-	"main": "bc-handler.js",
+	"main": "index.js",
 	"scripts": {
 		"format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
 		"lint": "tslint -p tsconfig.json",
