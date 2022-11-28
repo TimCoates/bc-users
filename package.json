@@ -5,20 +5,28 @@
 	],
 	"version": "1.0.16",
 	"description": "Repo for an npm package to retrieve users of a club where members are managed via British Cycling's Club Manager tool.",
-	"main": "index.js",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
 	"scripts": {
 		"format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
 		"lint": "tslint -p tsconfig.json",
 		"build": "tsc",
 		"test": "jest",
-		"prepublishOnly": "npm version patch",
-		"pub": "npm publish --access public"
+		"prepare": "npm run build",
+		"prepublishOnly": "npm test && npm run lint",
+		"preversion": "npm run lint",
+		"version": "npm run format && git add -A src",
+		"postversion": "git push && git push --tags"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/TimCoates/bc-users.git"
 	},
-	"keywords": [],
+	"keywords": [
+		"British",
+		"Cycling",
+		"Members"
+	],
 	"author": "",
 	"license": "Apache-2.0",
 	"bugs": {
