@@ -1,5 +1,4 @@
 import axios from "axios";
-var zlib = require("zlib");
 import { structures } from "./structures";
 let jsdom = require("jsdom");
 const { JSDOM } = jsdom;

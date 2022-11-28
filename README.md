@@ -13,3 +13,11 @@ You need the following details to use this package:
 NB: The membership number must have access to the Club Membership details here: https://www.britishcycling.org.uk/dashboard/club/membership?club_id=(Club ID goes here).
 
 # Usage
+
+```
+let client = new BCClient([username], [password]);
+let result = await client.authenticate();
+if(result) {
+	let people: structures.bcPerson[] = await client.getMembers([BC_CLUBID]);
+}
+```
