@@ -13,10 +13,9 @@
 		"build": "tsc",
 		"test": "jest",
 		"prepare": "npm run build",
-		"prepublishOnly": "npm test && npm run lint",
-		"preversion": "npm run lint",
-		"version": "npm run format && git add -A src",
-		"postversion": "git push && git push --tags"
+		"version": "git add -A src",
+		"postversion": "git push && git push --tags",
+		"pub": "npm publish --access=public"
 	},
 	"repository": {
 		"type": "git",
