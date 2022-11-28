@@ -2,7 +2,7 @@ import axios from "axios";
 import { structures } from "./structures";
 let jsdom = require("jsdom");
 const { JSDOM } = jsdom;
-import { logThis, doCookie } from "./utils";
+import { logThis } from "./utils";
 
 export class BCClient {
 	readonly baseURL: string = "https://www.britishcycling.org.uk";
@@ -41,7 +41,7 @@ export class BCClient {
 				this.authenticated = true;
 				logThis("BC-16", "authenticate", "Authenticated");
 				let cookies: string[] = response.headers["set-cookie"];
-				this.cookie = await doCookie(cookies);
+				this.cookie = await this.doCookie(cookies);
 				logThis("BC-17", "authenticate", "got cookie", this.cookie);
 				return true;
 			} else {
@@ -247,5 +247,33 @@ export class BCClient {
 		}
 		logThis("BC-95", "getItemsFromDOM", "Returning this object", returnVal);
 		return returnVal;
+	}
+
+	/**
+	 * 
+	 * @param cookies 
+	 */
+	async doCookie(cookies: string[]): Promise<string> {
+		logThis("BC-90", "doCookie", "called", cookies);
+		let cookie: string = "";
+		let cookieExpiry: string = "";
+		for (let item of cookies) {
+			if (item.startsWith("ZUVVI=")) {
+				cookie = item.split(":")[0] + "; ";
+				let cookieParts = item.split(";");
+				for (let part of cookieParts) {
+					if (part.trim().toLowerCase().startsWith("expires")) {
+						cookieExpiry = item.split(";")[1].split("=")[1];
+					}
+				}
+			}
+		}
+		if (cookie.length > 0) {
+			cookie = cookie.split(";")[0] + ";";
+		}
+		logThis("BC-91", "doCookie", "Got cookie", cookie);
+		logThis("BC-92", "doCookie", "Got cookie expiry", cookieExpiry);
+		logThis("BC-96", "doCookie", "Returning cookie", cookie);
+		return cookie;
 	}
 }
