@@ -15,7 +15,7 @@
 		"prepare": "npm run build",
 		"version": "git add -A src",
 		"postversion": "git push && git push --tags",
-		"pub": "npm publish --access=public"
+		"pub": "npm publish --access=public --verbose"
 	},
 	"repository": {
 		"type": "git",
