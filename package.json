@@ -3,7 +3,7 @@
 	"files": [
 		"lib/**/*"
 	],
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"description": "Repo for an npm package to retrieve users of a club where members are managed via British Cycling's Club Manager tool.",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
